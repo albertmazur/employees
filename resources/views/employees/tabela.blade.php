@@ -6,7 +6,7 @@
         <table class="table table-striped">
             <thead>
                 @section("headerTable")
-                    <tr>
+                    <tr class="text-center">
                         <th>Id</th>
                         <th>{{__("Imię")}}</th>
                         <th>{{__("Nazwisko")}}</th>
@@ -21,20 +21,18 @@
                 @yield("headerTable")
             </thead>
             <tbody class="table-group-divider">
-                <form id="checkboxForm" action="{{route("download")}}" method="get">
-                    @foreach ($employees as $e)
-                        <tr>
-                            <td>{{$e->emp_no}}</td>
-                            <td>{{$e->first_name}}</td>
-                            <td>{{$e->last_name}}</td>
-                            <td>{{$e->gender}}</td>
-                            <td>{{$e->currentDepartment()->dept_name}}</td>
-                            <td>{{$e->currentTitle()->title}}</td>
-                            <td>{{$e->currentSalary()->salary}}</td>
-                            <td><input class="form-check-input" type="checkbox" name="id[]" value="{{$e->emp_no}}"></td>
-                        </tr>
-                    @endforeach
-                </form>
+                @foreach ($employees as $e)
+                    <tr class="text-center">
+                        <td>{{$e->emp_no}}</td>
+                        <td>{{$e->first_name}}</td>
+                        <td>{{$e->last_name}}</td>
+                        <td>{{$e->gender}}</td>
+                        <td>{{$e->currentDepartment()->dept_name}}</td>
+                        <td>{{$e->currentTitle()->title}}</td>
+                        <td>{{$e->currentSalary()->salary}}</td>
+                        <td class="d-flex justify-content-center"><input class="form-check-input border border-dark " type="checkbox" name="id[]" value="{{$e->emp_no}}"></td>
+                    </tr>
+                @endforeach
             </tbody>
             <tfoot>@yield("headerTable")</tfoot>
         </table>
