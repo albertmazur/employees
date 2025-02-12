@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SearchEmployee;
+use App\Http\Requests\CheckIdEmployeesRequests;
+use App\Http\Requests\SearchEmployeeRequests;
 use App\Repository\DatabaseInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,44 +16,40 @@ class EmployeeController extends Controller
         $this->database = $databaseReposiotry;
     }
 
-    public function list(SearchEmployee $request){
+    public function list(SearchEmployeeRequests $request){
 
         $data = $request->validated();
 
-        $gender = $data["gender"] ?? "all";
-        $department = $data["department"] ?? "all";
-        $employee = $data["employee"] ?? "all";
+        $gender = $data["gender"] ?? null;
+        $department = $data["department"] ?? null;
+        $presence = $data["employee"] ?? null;
         $minSalary = $data["minSalary"] ?? null;
         $maxSalary = $data["maxSalary"] ?? null;
 
-        $employees = $this->database->filterEmployee($gender, $department, $employee, $minSalary, $maxSalary);
+        $employees = $this->database->filterEmployee($gender, $department, $presence, $minSalary, $maxSalary);
 
-            $d = [
-                "gender" => $gender,
-                "department" => $department,
-                "employee" => $employee,
-                "minSalary" => $minSalary,
-                "maxSalary" => $maxSalary
-            ];
+        $data = [
+            "gender" => $gender,
+            "department" => $department,
+            "presence" => $presence,
+            "minSalary" => $minSalary,
+            "maxSalary" => $maxSalary
+        ];
 
-            $employees->appends($d);
+        $employees->appends($data);
 
         return view("employees.tabela", [
             "employees" => $employees,
-            "gender" => $gender,
-            "department" => $department,
-            "employee" => $employee,
-            "minSalary" => $minSalary,
-            "maxSalary" => $maxSalary,
+            "data" => $data,
             "departmentAll" => $this->database->allNameDepartments()
         ]);
     }
 
-    public function download(Request $request){
+    public function download(CheckIdEmployeesRequests $request){
 
-        $data = $request->get("id");
+        $data = $request->validated();
 
-        $employees = $this->database->downloadEmployee($data);
+        $employees = $this->database->downloadEmployee($data['employee_ids']);
         $list = [];
 
         foreach($employees as $e){
@@ -62,7 +59,7 @@ class EmployeeController extends Controller
                 "department" => $e->currentDepartment()->dept_name,
                 "title" => $e->currentTitle()->title,
                 "currentSalary" => $e->currentSalary()->salary,
-                "sumaSalary" => $e->sumaSalaries()
+                "sumSalary" => $e->sumSalaries()
             ];
         }
 

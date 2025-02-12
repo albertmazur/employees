@@ -19,24 +19,25 @@ class DatabaseRepository implements DatabaseInterface{
         $this->departmentModel = $department;
     }
 
-    public function filterEmployee(string $gender = "all", string $department = "all", string $employee = "all", int $minSalary = null, int $maxSalary = null){
+    public function filterEmployee(string $gender = null, string $department = null, string $employee = null, int $minSalary = null, int $maxSalary = null, int $countPaginate = 30){
         $query = $this->employeeModel;
 
-        if($gender !== GenderStatus::All->value) $query = $query->where("gender", $gender);
-
-        if($department !== "all"){
+        if(isset($gender)) $query = $query->where("gender", $gender);
+        
+        if(isset($department)){
             $query = $query->whereHas("departments", function(Builder $q) use($department, $employee){
-                if($employee === EmployeeStatus::PRESENT->value){
+                if($employee === PresenceStatus::PRESENT->value){
                     $q->where([
                         ["departments.dept_no", $department],
                         ["dept_emp.to_date", ">=", Carbon::now()],
-
+                        ["dept_emp.to_date", ">=", Carbon::now()]
                     ]);
                 }
-                elseif($employee === EmployeeStatus::ABSENT->value){
+                elseif($employee === PresenceStatus::ABSENT->value){
                     $q->where([
                         ["departments.dept_no", $department],
-                        ["dept_emp.to_date", "<", Carbon::now()]
+                        ["dept_emp.to_date", "<", Carbon::now()],
+                        ["dept_emp.to_date", "<", Carbon::now()],
                     ]);
                 }
                 else{
@@ -52,29 +53,31 @@ class DatabaseRepository implements DatabaseInterface{
                 $q->where("salary", ">=", $minSalary);
             });
         }
+
         if(isset($maxSalary)){
             $query = $query->whereHas("salary", function(Builder $q) use($maxSalary){
                 $q->where("salary", "<=", $maxSalary);
             });
         }
 
-        $p = $query->paginate(30);
-        $collection = $p->getCollection();
+        $p = $query->paginate($countPaginate);
+        
+        // $collection = $p->getCollection();
 
-        $filteredCollection = $collection->filter(function($model) use ($department, $minSalary, $maxSalary) {
-            $chech = false;
-            if($department === "all") $chech=true;
-            if($department !== "all" && $department==$model->currentDepartment()->dept_no){
-                if($minSalary!=null && $minSalary<=$model->currentSalary()->salary) $chech=true;
-                else $chech=false;
-                if($maxSalary!=null && $maxSalary>=$model->currentSalary()->salary) $chech=true;
-                else $chech=false;
-                if(empty($minSalary) && empty($maxSalary) ) $chech=true;
-            }
-            if($chech) return $model;
-          });
+        // $filteredCollection = $collection->filter(function($model) use ($department, $minSalary, $maxSalary) {
+        //     $chech = false;
+        //     if($department === "all") $chech=true;
+        //     if($department !== "all" && $department==$model->currentDepartment()->dept_no){
+        //         if($minSalary!=null && $minSalary<=$model->currentSalary()->salary) $chech=true;
+        //         else $chech=false;
+        //         if($maxSalary!=null && $maxSalary>=$model->currentSalary()->salary) $chech=true;
+        //         else $chech=false;
+        //         if(empty($minSalary) && empty($maxSalary) ) $chech=true;
+        //     }
+        //     if($chech) return $model;
+        //   });
 
-          $p->setCollection($filteredCollection);
+        //   $p->setCollection($filteredCollection);
         return $p;
     }
 

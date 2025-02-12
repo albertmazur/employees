@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\EmployeeStatus;
 use App\Enums\GenderStatus;
+use App\Enums\PresenceStatus;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
 
-class SearchEmployee extends FormRequest
+class SearchEmployeeRequests extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,11 +27,11 @@ class SearchEmployee extends FormRequest
     public function rules()
     {
         return [
-            "department" => ["string", "nullable"],
-            "gender" => [ "nullable",],
-            "employee" => [ "nullable",],
-            "gender" => [ "nullable", new Enum(GenderStatus::class)],
-            "employee" => [ "nullable", new Enum(EmployeeStatus::class)],
+            "name" => ["nullable", "string"],
+            "last-name" => ["nullable", "string"],
+            "department" => ["nullable", "exists:departments,dept_no"],
+            "gender" => ["nullable", Rule::in(array_map(fn($case) => $case->value, GenderStatus::cases()))],
+            "presence" => ["sometimes", Rule::in(array_map(fn($case) => $case->value, PresenceStatus::cases()))],
             "minSalary" => ["numeric", "min:0", "nullable"],
             "maxSalary" => ["numeric", "min:0", "nullable"]
         ];

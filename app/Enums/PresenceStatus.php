@@ -2,8 +2,7 @@
 
 namespace App\Enums;
 
-enum EmployeeStatus: string{
-    case All = "all";
+enum PresenceStatus: string{
     case ABSENT ="absent";
     case PRESENT = "present";
 }

@@ -29,15 +29,15 @@ class Employee extends Model
         return $this->title()->orderBy("to_date", "DESC")->first();
     }
 
-    public function salary(){
+    public function salaries(){
         return $this->hasMany(Salary::class, "emp_no");
     }
 
     public function currentSalary(){
-        return $this->salary()->orderBy("to_date", "DESC")->first();
+        return $this->salaries()->orderBy("to_date", "DESC")->first();
     }
 
-    public function sumaSalaries(){
-        return $this->salary()->sum("salary");
+    public function sumSalaries(){
+        return $this->salaries()->sum("salary");
     }
 }

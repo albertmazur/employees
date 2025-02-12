@@ -30,7 +30,7 @@
                         <td>{{$e->currentDepartment()->dept_name}}</td>
                         <td>{{$e->currentTitle()->title}}</td>
                         <td>{{$e->currentSalary()->salary}}</td>
-                        <td class="d-flex justify-content-center"><input class="form-check-input border border-dark " type="checkbox" name="id[]" value="{{$e->emp_no}}"></td>
+                        <td class="d-flex justify-content-center"><input class="form-check-input border border-dark " type="checkbox" name="employee_ids[]" value="{{$e->emp_no}}"></td>
                     </tr>
                 @endforeach
             </tbody>

@@ -1,10 +1,11 @@
 import './bootstrap';
 
+const checkboxes = document.querySelectorAll('input[name="employee_ids[]"]')
 let selectedItems = JSON.parse(localStorage.getItem('selected')) || []
 let spanCounter = document.getElementById("count-export")
 spanCounter.textContent = selectedItems.length
 
-document.querySelectorAll(".form-check-input").forEach((checkbox) =>{
+checkboxes.forEach(checkbox =>{
     checkbox.checked = selectedItems.includes(checkbox.value)
     
     checkbox.addEventListener("change", (e) =>{
@@ -42,5 +43,10 @@ document.getElementById("downloadButton").addEventListener("click", ()=>{
 
 document.getElementById("resetExport").addEventListener("click", ()=>{
     localStorage.removeItem('selected')
+
+    checkboxes.forEach(checkbox => {
+        if(checkbox.checked) checkbox.checked = false
+    })
+
     spanCounter.textContent = '0'
 })
