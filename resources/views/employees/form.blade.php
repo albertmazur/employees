@@ -90,7 +90,10 @@
         </div>
 
     </div>
-    <p class="text-end me-3">{{__("Liczba pracowników zaznaczonych")}}: <span id="count-export">0</span></p>
+    <div class="text-end me-3">
+        <p class="text-danger" id="export-error-message"></p>
+        <p>{{__("Liczba pracowników zaznaczonych")}}: <span id="count-export">0</span></p>
+    </div>
     @if ($errors->any())
         <div class="alert alert-danger m-3">
             <ul>

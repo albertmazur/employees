@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Models\Title;
-use App\Models\Salary;
 use App\Models\Employee;
 use App\Models\Department;
 use App\Enums\PresenceStatus;

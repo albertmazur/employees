@@ -58,16 +58,13 @@ class EmployeeController extends Controller
             $list[] = [
                 "first_name" => $e->first_name,
                 "last_name" => $e->last_name,
-                "department" => $e->currentDepartment()->dept_name,
-                "title" => $e->currentTitle()->title,
-                "currentSalary" => $e->currentSalary()->salary,
+                "department" => $e->departments[0]->dept_name,
+                "title" => $e->titles[0]->title,
+                "currentSalary" => $e->salaries[0]->salary,
                 "sumSalary" => $e->sumSalaries()
             ];
         }
 
-        $nameFile = "listEmployee.json";
-
-        Storage::put($nameFile, json_encode($list));
-        return Storage::download($nameFile, "list.json");
+        return Storage::put("listEmployee.json", response()->json($list));
     }
 }
