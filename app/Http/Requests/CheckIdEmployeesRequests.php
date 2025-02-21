@@ -25,7 +25,7 @@ class CheckIdEmployeesRequests extends FormRequest
     {
         return [
             'employee_ids' => 'required|array',
-            'employee_ids.*' => 'exists:categories,id',
+            'employee_ids.*' => 'exists:employees,emp_no',
         ];
     }
 }

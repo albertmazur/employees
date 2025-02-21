@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Title;
 use App\Repository\DatabaseInterface;
 use App\Repository\DatabaseRepository;
 use Illuminate\Support\ServiceProvider;
@@ -19,7 +20,7 @@ class EmployeeProvider extends ServiceProvider
     {
         //
         $this->app->singleton(DatabaseInterface::class, function($app){
-            return new DatabaseRepository($app->make(Employee::class), $app->make(Department::class));
+            return new DatabaseRepository($app->make(Employee::class), $app->make(Department::class), $app->make(Title::class));
         });
     }
 

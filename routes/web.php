@@ -16,4 +16,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [EmployeeController::class, "list"])->name("list");
 
-Route::get("/download", [EmployeeController::class, "download"])->name("download");
+Route::post("/download", [EmployeeController::class, "download"])->name("download");

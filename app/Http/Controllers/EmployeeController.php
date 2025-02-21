@@ -17,24 +17,27 @@ class EmployeeController extends Controller
     }
 
     public function list(SearchEmployeeRequests $request){
-
         $data = $request->validated();
 
-        $gender = $data["gender"] ?? null;
-        $department = $data["department"] ?? null;
-        $presence = $data["employee"] ?? null;
-        $minSalary = $data["minSalary"] ?? null;
-        $maxSalary = $data["maxSalary"] ?? null;
-
-        $employees = $this->database->filterEmployee($gender, $department, $presence, $minSalary, $maxSalary);
-
         $data = [
-            "gender" => $gender,
-            "department" => $department,
-            "presence" => $presence,
-            "minSalary" => $minSalary,
-            "maxSalary" => $maxSalary
+            "first-name" => $data["first-name"] ?? '',
+            "last-name" => $data["last-name"] ?? '',
+            "gender" => $data["gender"] ?? null,
+            "department" => $data["department"] ?? null,
+            "presence" => $data["presence"] ?? null,
+            "minSalary" => $data["minSalary"] ?? null,
+            "maxSalary" => $data["maxSalary"] ?? null
         ];
+
+        $employees = $this->database->filterEmployee(
+            $data["first-name"],
+            $data["last-name"],
+            $data["gender"],
+            $data["department"],
+            $data["presence"],
+            $data["minSalary"],
+            $data["maxSalary"]
+        );
 
         $employees->appends($data);
 
@@ -46,7 +49,6 @@ class EmployeeController extends Controller
     }
 
     public function download(CheckIdEmployeesRequests $request){
-
         $data = $request->validated();
 
         $employees = $this->database->downloadEmployee($data['employee_ids']);

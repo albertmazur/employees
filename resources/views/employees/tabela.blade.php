@@ -27,9 +27,9 @@
                         <td>{{$e->first_name}}</td>
                         <td>{{$e->last_name}}</td>
                         <td>{{$e->gender}}</td>
-                        <td>{{$e->currentDepartment()->dept_name}}</td>
-                        <td>{{$e->currentTitle()->title}}</td>
-                        <td>{{$e->currentSalary()->salary}}</td>
+                        <td>{{$e->departments[0]->dept_name}}</td>
+                        <td>{{$e->titles[0]->title}}</td>
+                        <td>{{$e->salaries[0]->salary}}</td>
                         <td class="d-flex justify-content-center"><input class="form-check-input border border-dark " type="checkbox" name="employee_ids[]" value="{{$e->emp_no}}"></td>
                     </tr>
                 @endforeach

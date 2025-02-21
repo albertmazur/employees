@@ -2,87 +2,87 @@
 
 namespace App\Repository;
 
-use App\Enums\EmployeeStatus;
-use App\Enums\GenderStatus;
-use App\Models\Department;
+use App\Models\Title;
+use App\Models\Salary;
 use App\Models\Employee;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Department;
+use App\Enums\PresenceStatus;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class DatabaseRepository implements DatabaseInterface{
 
     private Employee $employeeModel;
     private Department $departmentModel;
+    private Title $titleModel;
 
-    public function __construct(Employee $employee, Department $department){
+    public function __construct(Employee $employee, Department $department, Title $title){
         $this->employeeModel = $employee;
         $this->departmentModel = $department;
+        $this->titleModel = $title;
     }
 
-    public function filterEmployee(string $gender = null, string $department = null, string $employee = null, int $minSalary = null, int $maxSalary = null, int $countPaginate = 30){
-        $query = $this->employeeModel;
+    private function addSubJoin($query, $table_name){
+        $subQuery = DB::table($table_name)->selectRaw("emp_no, Max(to_date) as max_to_date, Max(from_date) as max_from_date")
+        ->groupBy("emp_no");
 
-        if(isset($gender)) $query = $query->where("gender", $gender);
-        
-        if(isset($department)){
-            $query = $query->whereHas("departments", function(Builder $q) use($department, $employee){
-                if($employee === PresenceStatus::PRESENT->value){
-                    $q->where([
-                        ["departments.dept_no", $department],
-                        ["dept_emp.to_date", ">=", Carbon::now()],
-                        ["dept_emp.to_date", ">=", Carbon::now()]
-                    ]);
-                }
-                elseif($employee === PresenceStatus::ABSENT->value){
-                    $q->where([
-                        ["departments.dept_no", $department],
-                        ["dept_emp.to_date", "<", Carbon::now()],
-                        ["dept_emp.to_date", "<", Carbon::now()],
-                    ]);
-                }
-                else{
-                    $q->where([
-                        ["departments.dept_no", $department],
-                    ]);
-                }
-            });
+        $query->joinSub($subQuery, 'latest_'.$table_name, function($join) use($table_name){
+            $join->on($table_name.'.emp_no', '=', 'latest_'.$table_name.'.emp_no')
+            ->on($table_name.'.to_date', '=', 'latest_'.$table_name.'.max_to_date')
+            ->on($table_name.'.from_date', '=', 'latest_'.$table_name.'.max_from_date');
+        });
+        $query->join($table_name, $table_name.".emp_no", "=", "employees.emp_no");
+    }
+
+    public function filterEmployee(
+        string $firstName = '',
+        string $lastName = '',
+        string $gender = null,
+        string $department = null,
+        string $employeeStatus = null,
+        int $minSalary = null,
+        int $maxSalary = null,
+        int $countPaginate = 30
+        ){
+        $query = Employee::with(['departments', 'titles', 'salaries']);
+
+        if ($department || $employeeStatus){
+            $this->addSubJoin($query, 'dept_emp');
+            $query->join('departments', 'dept_emp.dept_no', "=", "departments.dept_no");
+            if($department) $query->where('departments.dept_no', "=", $department);
+
+            if($employeeStatus === PresenceStatus::PRESENT->value) $query->where('dept_emp.to_date', ">=", Carbon::now());
+            elseif ($employeeStatus === PresenceStatus::ABSENT->value) $query->where('dept_emp.to_date', "<", Carbon::now());
         }
 
-        if(isset($minSalary)){
-            $query = $query->whereHas("salary", function(Builder $q) use($minSalary){
-                $q->where("salary", ">=", $minSalary);
-            });
+        if($minSalary || $maxSalary){
+            $this->addSubJoin($query, 'salaries');
+            if($minSalary) $query->where('salaries.salary', '=>', $minSalary);
+            if($maxSalary) $query ->where('salaries.salary', '<=', $maxSalary);
         }
 
-        if(isset($maxSalary)){
-            $query = $query->whereHas("salary", function(Builder $q) use($maxSalary){
-                $q->where("salary", "<=", $maxSalary);
-            });
+        if ($firstName !== ''){
+            $query->where('first_name', 'LIKE', "%$firstName%");
         }
 
-        $p = $query->paginate($countPaginate);
-        
-        // $collection = $p->getCollection();
+        if ($lastName !== ''){
+            $query->where('last_name', 'LIKE', "%$lastName%");
+        }
 
-        // $filteredCollection = $collection->filter(function($model) use ($department, $minSalary, $maxSalary) {
-        //     $chech = false;
-        //     if($department === "all") $chech=true;
-        //     if($department !== "all" && $department==$model->currentDepartment()->dept_no){
-        //         if($minSalary!=null && $minSalary<=$model->currentSalary()->salary) $chech=true;
-        //         else $chech=false;
-        //         if($maxSalary!=null && $maxSalary>=$model->currentSalary()->salary) $chech=true;
-        //         else $chech=false;
-        //         if(empty($minSalary) && empty($maxSalary) ) $chech=true;
-        //     }
-        //     if($chech) return $model;
-        //   });
+        if (!is_null($gender)){
+            $query->where('gender', $gender);
+        }
 
-        //   $p->setCollection($filteredCollection);
-        return $p;
+        return $query->paginate($countPaginate);
     }
 
     public function allNameDepartments(){
         return $this->departmentModel::all();
+    }
+
+    public function allNameTitles(){
+        return $this->titleModel::all();
     }
 
     public function downloadEmployee(array $id){

@@ -1,4 +1,4 @@
-import './bootstrap';
+import './bootstrap'
 
 const checkboxes = document.querySelectorAll('input[name="employee_ids[]"]')
 let selectedItems = JSON.parse(localStorage.getItem('selected')) || []
@@ -18,26 +18,36 @@ checkboxes.forEach(checkbox =>{
 })
 
 document.getElementById("downloadButton").addEventListener("click", ()=>{
-    document.getElementById("checkboxForm").submit()
+    if (selectedItems && Array.isArray(selectedItems)) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
-    if (idList && Array.isArray(idList)) {
-        // Przykład wysyłania danych (np. AJAX, fetch, itp.)
-        fetch('/your-endpoint', {
+        fetch('/download', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             },
-            body: JSON.stringify({ ids: idList }),
+            body: JSON.stringify({ employee_ids: selectedItems }),
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Sukces:', data);
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
+            return response.blob()
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = "list.json"
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
         })
         .catch(error => {
-            console.error('Błąd:', error);
-        });
-    } else {
-        console.error('Lista ID nie jest dostępna lub jest pusta.');
+            console.error('Błąd:', error)
+        })
+    }
+    else {
+        console.error('Lista ID nie jest dostępna lub jest pusta.')
     }
 })
 

@@ -14,27 +14,19 @@ class Employee extends Model
     public $timestamps = false;
 
     public function departments(){
-        return $this->belongsToMany(Department::class, "dept_emp", "emp_no", "dept_no")->withPivot('from_date', 'to_date');;
+        return $this->belongsToMany(Department::class, "dept_emp", "emp_no", "dept_no")
+            ->withPivot('from_date', 'to_date')
+            ->orderByDesc('dept_emp.to_date');
     }
 
-    public function currentDepartment(){
-        return $this->departments()->orderBy("dept_emp.to_date", "DESC")->first();
-    }
-
-    public function title(){
-        return $this->hasMany(Title::class, "emp_no");
-    }
-
-    public function currentTitle(){
-        return $this->title()->orderBy("to_date", "DESC")->first();
+    public function titles(){
+        return $this->hasMany(Title::class, "emp_no")
+            ->orderByDesc('to_date');
     }
 
     public function salaries(){
-        return $this->hasMany(Salary::class, "emp_no");
-    }
-
-    public function currentSalary(){
-        return $this->salaries()->orderBy("to_date", "DESC")->first();
+        return $this->hasMany(Salary::class, "emp_no")
+            ->orderByDesc('to_date');
     }
 
     public function sumSalaries(){
