@@ -14,5 +14,5 @@ interface DatabaseInterface{
         int $countPaginate = 30
     );
     public function allNameDepartments();
-    public function downloadEmployee(array $id);
+    public function downloadEmployees(array $id);
 }

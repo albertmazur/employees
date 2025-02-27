@@ -8,13 +8,13 @@
                 @section("headerTable")
                     <tr class="text-center">
                         <th>Id</th>
-                        <th>{{__("Imię")}}</th>
-                        <th>{{__("Nazwisko")}}</th>
-                        <th>{{__("Płeć")}}</th>
-                        <th>{{__("Department")}}</th>
-                        <th>{{__("Tytuł")}}</th>
-                        <th>{{__("Pensja")}}</th>
-                        <th>{{__("Do exportu")}}</th>
+                        <th>{{__("employee.name")}}</th>
+                        <th>{{__("employee.lastName")}}</th>
+                        <th>{{__("employee.salary")}}</th>
+                        <th>{{__("employee.department")}}</th>
+                        <th>{{__("employee.title")}}</th>
+                        <th>{{__("employee.salary")}}</th>
+                        <th>{{__("employee.export")}}</th>
                     </tr>
                 @endsection
 
@@ -26,7 +26,7 @@
                         <td>{{$e->emp_no}}</td>
                         <td>{{$e->first_name}}</td>
                         <td>{{$e->last_name}}</td>
-                        <td>{{$e->gender}}</td>
+                        <td>{{$e->gender == 'M' ? __('employee.man') : __('employee.woman')}}</td>
                         <td>{{$e->departments[0]->dept_name}}</td>
                         <td>{{$e->titles[0]->title}}</td>
                         <td>{{$e->salaries[0]->salary}}</td>
@@ -40,7 +40,8 @@
             {{$employees->links()}}
         </div>
     </div>
+
+    <script>
+        const translations = @json(__('messages'));
+    </script> 
 @endsection
-
-
-

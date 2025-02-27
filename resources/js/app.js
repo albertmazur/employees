@@ -29,38 +29,44 @@ document.getElementById("downloadButton").addEventListener("click", ()=>{
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
-            json: JSON.stringify({ employee_ids: selectedItems }),
+            body: JSON.stringify({ employee_ids: selectedItems })
         })
         .then(response => {
-            console.log(response)
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
             return response.blob()
         })
         .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "aa.json";
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = "listEmployee.json"
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            window.URL.revokeObjectURL(url)
+
+            resetExportEmployeeId()
         })
         .catch(error => {
-            console.error(error)
-            exportErrorMessage.textContent = "Błąd podczas pobierania pliku"
+            exportErrorMessage.textContent = translations.download_error
         })
     }
     else {
-        exportErrorMessage.textContent = "Lista ID nie jest dostępna lub jest pusta."
+        exportErrorMessage.textContent = translations.empty_list_error
     }
 })
 
 document.getElementById("resetExport").addEventListener("click", ()=>{
+    resetExportEmployeeId()
+})
+
+function resetExportEmployeeId(){
     localStorage.removeItem('selected')
+    selectedItems = []
 
     checkboxes.forEach(checkbox => {
         if(checkbox.checked) checkbox.checked = false
     })
 
     spanCounter.textContent = '0'
-})
+}

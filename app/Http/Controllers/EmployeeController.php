@@ -5,15 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CheckIdEmployeesRequests;
 use App\Http\Requests\SearchEmployeeRequests;
 use App\Repository\DatabaseInterface;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
     private DatabaseInterface $database;
 
-    public function __construct(DatabaseInterface $databaseReposiotry){
-        $this->database = $databaseReposiotry;
+    public function __construct(DatabaseInterface $databaseRepository){
+        $this->database = $databaseRepository;
     }
 
     public function list(SearchEmployeeRequests $request){
@@ -51,7 +50,7 @@ class EmployeeController extends Controller
     public function download(CheckIdEmployeesRequests $request){
         $data = $request->validated();
 
-        $employees = $this->database->downloadEmployee($data['employee_ids']);
+        $employees = $this->database->downloadEmployees($data['employee_ids']);
         $list = [];
 
         foreach($employees as $e){
@@ -65,6 +64,9 @@ class EmployeeController extends Controller
             ];
         }
 
-        return Storage::put("listEmployee.json", response()->json($list));
+        $nameFile = "listEmployee.json";
+
+        Storage::put($nameFile, json_encode($list));
+        return Storage::download($nameFile, "list.json");
     }
 }

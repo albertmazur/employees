@@ -84,7 +84,7 @@ class DatabaseRepository implements DatabaseInterface{
         return $this->titleModel::all();
     }
 
-    public function downloadEmployee(array $id){
-        return $this->employeeModel::find($id);
+    public function downloadEmployees(array $ids){
+        return $this->employeeModel::findOrFail($ids);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CheckIdEmployeesRequests extends FormRequest
 {
@@ -24,8 +26,15 @@ class CheckIdEmployeesRequests extends FormRequest
     public function rules()
     {
         return [
-            'employee_ids' => 'required|array',
-            'employee_ids.*' => 'exists:employees,emp_no',
+            'employee_ids' => 'required|array|min:1',
+            'employee_ids.*' => 'integer|exists:employees,emp_no',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'errors' => $validator->errors()
+        ], 422));
     }
 }
