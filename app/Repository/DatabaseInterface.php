@@ -16,5 +16,5 @@ interface DatabaseInterface{
     );
     public function allNameDepartments();
     public function allNameTitles();
-    public function downloadEmployees(array $id);
+    public function getEmployees(array|int $ids);
 }

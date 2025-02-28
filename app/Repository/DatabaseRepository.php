@@ -90,7 +90,7 @@ class DatabaseRepository implements DatabaseInterface{
         return $this->titleModel::groupBy('title')->get();
     }
 
-    public function downloadEmployees(array $ids){
+    public function getEmployees(array|int $ids){
         return $this->employeeModel::findOrFail($ids);
     }
 }

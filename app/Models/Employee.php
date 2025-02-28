@@ -19,6 +19,12 @@ class Employee extends Model
             ->orderByDesc('dept_emp.to_date');
     }
 
+    public function manager(){
+        return $this->belongsToMany(Department::class, "dept_manager", "emp_no", "dept_no")
+            ->withPivot('from_date', 'to_date')
+            ->orderByDesc('dept_manager.to_date');
+    }
+
     public function titles(){
         return $this->hasMany(Title::class, "emp_no")
             ->orderByDesc('to_date');

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CheckIdEmployeesRequests;
-use App\Http\Requests\SearchEmployeeRequests;
 use App\Repository\DatabaseInterface;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\SearchEmployeeRequests;
+use App\Http\Requests\CheckIdEmployeesRequests;
 
 class EmployeeController extends Controller
 {
@@ -15,7 +15,7 @@ class EmployeeController extends Controller
         $this->database = $databaseRepository;
     }
 
-    public function list(SearchEmployeeRequests $request){
+    public function getList(SearchEmployeeRequests $request){
         $data = $request->validated();
 
         $data = [
@@ -50,10 +50,15 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function download(CheckIdEmployeesRequests $request){
+    public function getSingleEmployee(int $emp_no){
+        $employee = $this->database->getEmployees($emp_no);
+        return view("employees.show", compact('employee'));
+    }
+
+    public function postDownload(CheckIdEmployeesRequests $request){
         $data = $request->validated();
 
-        $employees = $this->database->downloadEmployees($data['employee_ids']);
+        $employees = $this->database->getEmployees($data['employee_ids']);
         $list = [];
 
         foreach($employees as $e){

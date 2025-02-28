@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [EmployeeController::class, "list"])->name("list");
+Route::get("/", [EmployeeController::class, "getList"])
+    ->name("list");
 
-Route::post("/download", [EmployeeController::class, "download"])->name("download");
+Route::get("/{emp_no}", [EmployeeController::class, "getSingleEmployee"])
+    ->where('emp_no', '[0-9]+')
+    ->name("single");
+
+Route::post("/download", [EmployeeController::class, "postDownload"])
+    ->name("download");
