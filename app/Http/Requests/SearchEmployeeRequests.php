@@ -29,7 +29,8 @@ class SearchEmployeeRequests extends FormRequest
         return [
             "first-name" => ["nullable", "string"],
             "last-name" => ["nullable", "string"],
-            "department" => ["nullable", "exists:departments,dept_no"],
+            "department" => ["nullable", "string", "exists:departments,dept_no"],
+            "title" => ["nullable", "string", "exists:titles,title"],
             "gender" => ["nullable", new Enum(GenderStatus::class)],
             "presence" => ["nullable", new Enum(PresenceStatus::class)],
             "minSalary" => ["numeric", "min:0", "nullable"],

@@ -24,6 +24,15 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group m-3 w-75">
+                <label class="h5">{{__("employee.title")}}:</label>
+                <select class="form-control" name="title">
+                    <option @selected(is_null($data['title'])) value="">{{__("employee.form.everything")}}</option>
+                    @foreach ($titleAll as $t)
+                        <option @selected($data['title']==$t->title) value="{{$t->title}}">{{$t->title}}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="form-group m-3">
                 <label class="h5">{{__("employee.salary")}}:</label>
                 <div class="d-flex">

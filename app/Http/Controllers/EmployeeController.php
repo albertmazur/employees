@@ -23,6 +23,7 @@ class EmployeeController extends Controller
             "last-name" => $data["last-name"] ?? '',
             "gender" => $data["gender"] ?? null,
             "department" => $data["department"] ?? null,
+            "title" => $data["title"] ?? null,
             "presence" => $data["presence"] ?? null,
             "minSalary" => $data["minSalary"] ?? null,
             "maxSalary" => $data["maxSalary"] ?? null
@@ -33,6 +34,7 @@ class EmployeeController extends Controller
             $data["last-name"],
             $data["gender"],
             $data["department"],
+            $data["title"],
             $data["presence"],
             $data["minSalary"],
             $data["maxSalary"]
@@ -43,7 +45,8 @@ class EmployeeController extends Controller
         return view("employees.tabela", [
             "employees" => $employees,
             "data" => $data,
-            "departmentAll" => $this->database->allNameDepartments()
+            "departmentAll" => $this->database->allNameDepartments(),
+            'titleAll' => $this->database->allNameTitles()
         ]);
     }
 

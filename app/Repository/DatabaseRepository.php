@@ -39,6 +39,7 @@ class DatabaseRepository implements DatabaseInterface{
         string $lastName = '',
         string $gender = null,
         string $department = null,
+        string $title = null,
         string $employeeStatus = null,
         int $minSalary = null,
         int $maxSalary = null,
@@ -61,6 +62,11 @@ class DatabaseRepository implements DatabaseInterface{
             if($maxSalary) $query ->where('salaries.salary', '<=', $maxSalary);
         }
 
+        if($title){
+            $this->addSubJoin($query, 'titles');
+            $query->where('titles.title', 'LIKE', $title);
+        }
+
         if ($firstName !== ''){
             $query->where('first_name', 'LIKE', "%$firstName%");
         }
@@ -81,7 +87,7 @@ class DatabaseRepository implements DatabaseInterface{
     }
 
     public function allNameTitles(){
-        return $this->titleModel::all();
+        return $this->titleModel::groupBy('title')->get();
     }
 
     public function downloadEmployees(array $ids){
